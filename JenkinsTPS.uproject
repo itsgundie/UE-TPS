@@ -1,0 +1,13 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "{F83E1A94-449B-2F25-9472-61BADC41B44F}",
+  "Category": "",
+  "Description": "",
+  "Modules": [
+    {
+      "Name": "JenkinsTPS",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
+}
