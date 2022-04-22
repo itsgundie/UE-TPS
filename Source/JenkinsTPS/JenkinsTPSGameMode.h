@@ -9,11 +9,8 @@
 UCLASS(minimalapi)
 class AJenkinsTPSGameMode : public AGameModeBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	AJenkinsTPSGameMode();
+    AJenkinsTPSGameMode();
 };
-
-
-
