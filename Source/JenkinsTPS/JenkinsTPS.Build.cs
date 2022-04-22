@@ -21,5 +21,7 @@ public class JenkinsTPS : ModuleRules
         {
             PublicDependencyModuleNames.Add("HeadMountedDisplay");
         }
+
+        PublicIncludePaths.Add("JenkinsTPS");
     }
 }
