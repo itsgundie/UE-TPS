@@ -2,14 +2,16 @@
 
 #include "CoreMinimal.h"
 
-namespace TPSGame
+namespace TPS
 {
-
-template<typename Type1, typename  TYpe2>
+namespace Test
+{
+template <typename Type1, typename TYpe2>
 struct TestPayLoad
 {
     Type1 TestValue;
     TYpe2 ExpectedValue;
     float Tolerance = KINDA_SMALL_NUMBER;
 };
+}
 }
