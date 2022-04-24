@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "JenkinsTPSCharacter.generated.h"
 
+class UTPSPickupComponent;
+
 UCLASS(config = Game)
 class AJenkinsTPSCharacter : public ACharacter
 {
@@ -68,4 +70,9 @@ public:
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+
+protected:
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UTPSPickupComponent* UtpsPickupComponent;
 };
