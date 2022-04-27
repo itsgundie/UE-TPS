@@ -20,7 +20,7 @@ public:
     ATPSPickupItem();
 
     virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-    
+
 protected:
     UPROPERTY(VisibleAnywhere)
     USphereComponent* CollisionComponent;

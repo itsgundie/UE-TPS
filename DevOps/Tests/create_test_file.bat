@@ -54,7 +54,7 @@ call :createTemplate "%TestCppTemplateFilePath%" , "%TestCppFilePath%"
 call :createTemplate "%TestHTemplateFilePath%" , "%TestHFilePath%"
 
 rem clang-format
-call "%~dp0\..\misc\format_all_files.bat"
+call "%~dp0\..\Misc\format_all_files_to_code_style.bat"
 
 echo %TEST_INCLUDE_FILE_1%
 goto:EOF
@@ -72,4 +72,4 @@ for /f "usebackq tokens=*" %%a in ("%TemplateName%") do (
 )
 
 
-call "%~dp0generate_project_files_4.27.bat"
+call "%~dp0\..\..\generate_project_files_4.27.bat"

@@ -7,14 +7,13 @@
 #include "TPSTypes.h"
 #include "TPSPickupComponent.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class JENKINSTPS_API UTPSPickupComponent : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-public:	
-	UTPSPickupComponent();
+public:
+    UTPSPickupComponent();
 
     bool TryToAddItem(const FPickupData& Data);
 
@@ -22,7 +21,7 @@ public:
     int32 GetItemCountByType(EPickupItemType Type) const;
 
 protected:
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TMap<EPickupItemType, int32> PickupsLimits;

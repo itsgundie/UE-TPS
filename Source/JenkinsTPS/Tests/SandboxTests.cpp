@@ -37,7 +37,7 @@ bool FMathMaxInt::RunTest(const FString& Parameters)
     };
     // clang-format on
 
-    for (const auto Data:TestData)
+    for (const auto Data : TestData)
     {
         TestTrueExpr(FMath::Max(Data.TestValue.Min, Data.TestValue.Max) == Data.ExpectedValue);
     }
@@ -56,12 +56,12 @@ bool FMathSqrt::RunTest(const FString& Parameters)
         {3.0f, 1.73205f, 1.e-5f},
     };
     // clang-format on
-    for (const auto Data: TestData)
+    for (const auto Data : TestData)
     {
         const bool isEqual = FMath::IsNearlyEqual(FMath::Sqrt(Data.TestValue), Data.ExpectedValue, Data.Tolerance);
         TestTrueExpr(isEqual);
     }
-    
+
     AddInfo("Square Root function testing");
     TestEqual("Sqrt(4) [0]", FMath::Sqrt(4.0f), 2.0f);
     TestEqual("Sqrt(3) [1]", FMath::Sqrt(3.0f), 1.73205f, 1.e-5f);
@@ -83,7 +83,7 @@ bool FMathSin::RunTest(const FString& Parameters)
     };
     // clang-format on
 
-    for (const auto Data: TestData)
+    for (const auto Data : TestData)
     {
         const float Rad = FMath::DegreesToRadians(Data.TestValue);
         TestTrueExpr(FMath::IsNearlyEqual(FMath::Sin(Rad), Data.ExpectedValue, 0.001f));

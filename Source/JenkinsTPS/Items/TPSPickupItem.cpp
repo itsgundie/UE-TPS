@@ -8,7 +8,7 @@
 
 ATPSPickupItem::ATPSPickupItem()
 {
- 	PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = false;
 
     CollisionComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
     check(CollisionComponent);
@@ -29,9 +29,8 @@ void ATPSPickupItem::NotifyActorBeginOverlap(AActor* OtherActor)
         {
             if (PickupComponent->TryToAddItem(PickupData))
             {
-                Destroy();       
+                Destroy();
             }
         }
     }
 }
-

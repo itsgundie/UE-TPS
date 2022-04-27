@@ -1,6 +1,5 @@
 // TPS Game For Unreal Automation
 
-
 #if (WITH_DEV_AUTOMATION_TESTS || WITH_PERF_AUTOMATION_TESTS)
 
 #include "Tests/ScienceFuncLibTests.h"
@@ -22,8 +21,7 @@ bool FFibonacciSimple::RunTest(const FString& Parameters)
 {
     AddInfo("Fibonacci sequence simple calculation with predefined pairs of positive numbers");
 
-    const TArray<TPS::Test::TestPayLoad<int32, int32>> TestData
-    {
+    const TArray<TPS::Test::TestPayLoad<int32, int32>> TestData{
         {0, 0},
         {1, 1},
         {2, 1},
@@ -45,8 +43,8 @@ bool FFibonacciStress::RunTest(const FString& Parameters)
 
     for (int32 i = 2; i < 42; i++)
     {
-        TestTrueExpr(UScienceFuncLib::Fibonacci(i) == //
-            UScienceFuncLib::Fibonacci(i - 1) + UScienceFuncLib::Fibonacci(i - 2));
+        TestTrueExpr(UScienceFuncLib::Fibonacci(i) ==  //
+                     UScienceFuncLib::Fibonacci(i - 1) + UScienceFuncLib::Fibonacci(i - 2));
     }
     return true;
 }
@@ -58,6 +56,5 @@ bool FFibonacciLogHasErrors::RunTest(const FString& Parameters)
     UScienceFuncLib::Fibonacci(-13);
     return true;
 }
-
 
 #endif

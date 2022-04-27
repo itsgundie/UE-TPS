@@ -1,12 +1,10 @@
 // TPS Game For Unreal Automation
 
-
 #include "Components/TPSPickupComponent.h"
 
 UTPSPickupComponent::UTPSPickupComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
-    
+    PrimaryComponentTick.bCanEverTick = false;
 }
 
 bool UTPSPickupComponent::TryToAddItem(const FPickupData& Data)
@@ -31,13 +29,13 @@ bool UTPSPickupComponent::TryToAddItem(const FPickupData& Data)
 
 int32 UTPSPickupComponent::GetItemCountByType(EPickupItemType Type) const
 {
-    return  Pickup.Contains(Type) ? Pickup[Type] : 0;
+    return Pickup.Contains(Type) ? Pickup[Type] : 0;
 }
 
 void UTPSPickupComponent::BeginPlay()
 {
     Super::BeginPlay();
-
+#if !UE_BUILD_SHIPPING
     const UEnum* PickupsEnum = StaticEnum<EPickupItemType>();
     for (int32 i = 0; i < PickupsEnum->NumEnums() - 1; i++)
     {
@@ -46,6 +44,5 @@ void UTPSPickupComponent::BeginPlay()
         const bool LimitCheckCondition = PickupsLimits.Contains(EnumElement) && PickupsLimits[EnumElement] >= 0;
         checkf(LimitCheckCondition, TEXT("Limit for %s dosn't exist"), *EnumElementName);
     }
+#endif
 }
-
-

@@ -71,8 +71,7 @@ public:
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-    UTPSPickupComponent* UtpsPickupComponent;
+    UTPSPickupComponent* PickupComponent;
 };

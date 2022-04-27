@@ -1,15 +1,12 @@
 // TPS Game For Unreal Automation
 
-
 #include "Items/Battery.h"
 
 using namespace TPS;
 
-constexpr  float ChargeAmount = 0.1f;
+constexpr float ChargeAmount = 0.1f;
 
-TPS::Battery::Battery()
-{
-}
+TPS::Battery::Battery() {}
 
 TPS::Battery::Battery(float PercentIn)
 {

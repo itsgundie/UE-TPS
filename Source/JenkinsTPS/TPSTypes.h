@@ -4,7 +4,7 @@
 #include "TPSTypes.generated.h"
 
 UENUM(BlueprintType)
-enum class EPickupItemType: uint8
+enum class EPickupItemType : uint8
 {
     SPHERE = 0 UMETA(DisplayName = "Testing Sphere"),
     CUBE UMETA(DisplayName = "Testing Cube"),
@@ -23,4 +23,3 @@ struct FPickupData
     UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"))
     int32 Score;
 };
-
