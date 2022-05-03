@@ -11,7 +11,7 @@
 
 class USphereComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class JENKINSTPS_API ATPSPickupItem : public AActor
 {
     GENERATED_BODY()
