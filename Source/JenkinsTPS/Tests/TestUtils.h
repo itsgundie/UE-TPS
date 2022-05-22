@@ -24,7 +24,7 @@ struct TestPayLoad
         const auto EnumElement = static_cast<TYPE>(pickupType);
 #define ENUM_LOOP_END }
 
-template<typename T>
+template <typename T>
 T* SpawnBlueprint(UWorld* World, const FString& Name, const FTransform& Transform = FTransform::Identity)
 {
     const UBlueprint* BlueprintToSpawn = LoadObject<UBlueprint>(nullptr, *Name);
@@ -39,6 +39,23 @@ public:
 };
 
 UWorld* GetTestGameWorld();
+
+class FTPSUntilLatentCommand : public IAutomationLatentCommand
+{
+public:
+    FTPSUntilLatentCommand(TFunction<void()> InCallback, TFunction<void()> InTimeoutCallback, float InTimeout = 5.0f);
+
+    virtual bool Update() override;
+
+private:
+    TFunction<void()> Callback;
+    TFunction<void()> TimeoutCallback;
+    float Timeout;
+};
+
+int32 GetActionBindingIndexByName(UInputComponent* InputComponent, const FString& ActionName, EInputEvent InputEvent);
+
+int32 GetAxisBindingIndexByName(UInputComponent* InputComponent, const FString& AxisName);
 
 }  // namespace Test
 }  // namespace TPS
