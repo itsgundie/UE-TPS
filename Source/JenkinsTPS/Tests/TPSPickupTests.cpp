@@ -12,7 +12,9 @@
 #include "Components/TextRenderComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "TestUtils.h"
-#include "Misc/OutputDeviceNull.h"
+#include "Kismet/GameplayStatics.h"
+#include "JenkinsTPSCharacter.h"
+#include "Components/TPSPickupComponent.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FCppActorCantBeSpawnedInGameWorld, "TPSGame.Items.Pickup.CppActorCantBeSpawnedInGameWorld",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
@@ -23,11 +25,17 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FBlueprintShouldBeSetupCorrectly, "TPSGame.Item
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPickupDataShouldBeSetupCorrectly, "TPSGame.Items.Pickup.PickupDataShouldBeSetupCorrectly",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPickupCanBeTaken, "TPSGame.Items.Pickup.PickupCanBeTaken",
+    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FEveryPickupHasMesh, "TPSGame.Items.Pickup.EveryPickupHasMesh",
+    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
+
 namespace
 {
 constexpr char* PickupItemBPName = "Blueprint'/Game/Pickups/BP_TPSPickupItem.BP_TPSPickupItem'";
 constexpr char* PickupItemBPTestName = "Blueprint'/Game/Tests/BP_Test_TPSPickupItem.BP_Test_TPSPickupItem'";
-}  // namespace
+} // namespace
 
 using namespace TPS::Test;
 
@@ -68,10 +76,10 @@ bool FBlueprintShouldBeSetupCorrectly::RunTest(const FString& Parameters)
     TestTrueExpr(PickupItem->GetRootComponent() == CollisionComponent);
 
     ENUM_LOOP_START(ECollisionChannel, EElement)
-    if (EElement != ECC_OverlapAll_Deprecated)
-    {
-        TestTrueExpr(CollisionComponent->GetCollisionResponseToChannel(EElement) == ECollisionResponse::ECR_Overlap);
-    }
+        if (EElement != ECC_OverlapAll_Deprecated)
+        {
+            TestTrueExpr(CollisionComponent->GetCollisionResponseToChannel(EElement) == ECollisionResponse::ECR_Overlap);
+        }
     ENUM_LOOP_END
 
     const auto TextRendererComponent = PickupItem->FindComponentByClass<UTextRenderComponent>();
@@ -95,14 +103,83 @@ bool FPickupDataShouldBeSetupCorrectly::RunTest(const FString& Parameters)
     ATPSPickupItem* PickupItem = SpawnBlueprint<ATPSPickupItem>(World, PickupItemBPTestName, InitialTransform);
     if (!TestNotNull("Pickup item exists", PickupItem)) return false;
 
-    FVector Vector = {123.0f, 456.0f, 789.0f};
-    FString Command = FString::Printf(TEXT("SetTestData %i %f %s %s %s"),        //
-        314, 45.10f, *FString("\"Nothing To See Here -_- \""), *FString("Yes"),  //
-        *FString::Printf(TEXT("(X=%f,Y=%f,Z=%f)"), Vector.X, Vector.Y, Vector.Z));
-    FOutputDeviceNull OutputDeviceNull;
-    PickupItem->CallFunctionByNameWithArguments(*Command, OutputDeviceNull, nullptr, true);
+    const FPickupData PickupData{EPickupItemType::SPHERE, 42};
+    const FLinearColor PickupColor = FLinearColor::Yellow;
+    CallFuncByNameWithParams(PickupItem, "SetPickupData", {PickupData.ToString(), PickupColor.ToString()});
+
+    const auto TextRendererComponent = PickupItem->FindComponentByClass<UTextRenderComponent>();
+    if (!TestNotNull("Text Renderer Component Exists", TextRendererComponent)) return false;
+    TestTrueExpr(TextRendererComponent->Text.ToString().Equals(FString::FromInt(PickupData.Score)));
+    TestTrueExpr(TextRendererComponent->TextRenderColor == PickupColor.ToFColor(true));
+
+    const auto StaticMeshComponent = PickupItem->FindComponentByClass<UStaticMeshComponent>();
+    if (!TestNotNull("Static Mesh Component Exists", StaticMeshComponent)) return false;
+    const auto PickupMaterial = StaticMeshComponent->GetMaterial(0);
+    if (!TestNotNull("Pickup's Material Exists", PickupMaterial)) return false;
+    FLinearColor PickupMaterialColor;
+    PickupMaterial->GetVectorParameterValue(FHashedMaterialParameterInfo{"Color"}, PickupMaterialColor);
+    TestTrueExpr(PickupMaterialColor == PickupColor);
 
     return true;
 }
+
+bool FPickupCanBeTaken::RunTest(const FString& Parameters)
+{
+    LevelScope("/Game/Tests/EmptyTestLevel");
+
+    UWorld* World = GetTestGameWorld();
+    if (!TestNotNull("Game World Exists", World)) return false;
+
+    const FTransform InitialTransform{FVector{999.0f}};
+    ATPSPickupItem* PickupItem = SpawnBlueprint<ATPSPickupItem>(World, PickupItemBPTestName, InitialTransform);
+    if (!TestNotNull("Pickup item exists", PickupItem)) return false;
+
+    const FPickupData PickupData{EPickupItemType::SPHERE, 42};
+    const FLinearColor PickupColor = FLinearColor::Yellow;
+    CallFuncByNameWithParams(PickupItem, "SetPickupData", {PickupData.ToString(), PickupColor.ToString()});
+
+    TArray<AActor*> Pawns;
+    UGameplayStatics::GetAllActorsOfClass(World, AJenkinsTPSCharacter::StaticClass(), Pawns);
+    if (!TestTrueExpr(Pawns.Num() == 1)) return false;
+    const auto Character = Cast<AJenkinsTPSCharacter>(Pawns[0]);
+    if (!TestNotNull("TPS Character Exits", Character)) return false;
+    const auto PickupComponent = Character->FindComponentByClass<UTPSPickupComponent>();
+    if (!TestNotNull("Pickup Component Exists", PickupComponent)) return false;
+    const int PickupScoreAtStart = PickupComponent->GetItemCountByType(PickupData.Type);
+
+    Character->SetActorLocation(InitialTransform.GetLocation());
+    TestTrueExpr(PickupComponent->GetItemCountByType(PickupData.Type) == PickupScoreAtStart + PickupData.Score);
+    TestTrueExpr(!IsValid(PickupItem));
+    return true;
+}
+
+
+bool FEveryPickupHasMesh::RunTest(const FString& Parameters)
+{
+    LevelScope("/Game/Tests/EmptyTestLevel");
+
+    UWorld* World = GetTestGameWorld();
+    if (!TestNotNull("Game World Exists", World)) return false;
+
+    ENUM_LOOP_START(EPickupItemType, EElement)
+
+        const FTransform InitialTransform{FVector{120.0f * (pickupType + 1)}};
+        ATPSPickupItem* PickupItem = SpawnBlueprint<ATPSPickupItem>(World, PickupItemBPTestName, InitialTransform);
+        if (!TestNotNull("Pickup item exists", PickupItem)) return false;
+
+        const FPickupData PickupData{EElement, 42};
+        const FLinearColor PickupColor = FLinearColor::Gray;
+        CallFuncByNameWithParams(PickupItem, "SetPickupData", {PickupData.ToString(), PickupColor.ToString()});
+
+        const auto StaticMeshComponent = PickupItem->FindComponentByClass<UStaticMeshComponent>();
+        if (!TestNotNull("Static Mesh Component Exists", StaticMeshComponent)) return false;
+
+        const FString MeshMsg = FString::Printf(TEXT("Static Mesh for %s exists"), *UEnum::GetValueAsString(EElement));
+        TestNotNull(*MeshMsg, StaticMeshComponent->GetStaticMesh());
+    ENUM_LOOP_END
+
+    return true;
+}
+
 
 #endif

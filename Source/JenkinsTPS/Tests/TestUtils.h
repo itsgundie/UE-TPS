@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Misc/OutputDeviceNull.h"
 
 #if WITH_AUTOMATION_TESTS
 
@@ -57,6 +58,7 @@ int32 GetActionBindingIndexByName(UInputComponent* InputComponent, const FString
 
 int32 GetAxisBindingIndexByName(UInputComponent* InputComponent, const FString& AxisName);
 
+void CallFuncByNameWithParams(UObject* Object, const FString& FuncName, const TArray<FString>& Params);
 }  // namespace Test
 }  // namespace TPS
 #endif
