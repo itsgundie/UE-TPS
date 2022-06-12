@@ -13,6 +13,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "JenkinsTPS/Components/TPSPickupComponent.h"
+#include "TimerManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AJenkinsTPSCharacter
@@ -38,13 +39,13 @@ AJenkinsTPSCharacter::AJenkinsTPSCharacter()
     GetCharacterMovement()->AirControl = 0.2f;
 
     // Create a camera boom (pulls in towards the player if there is a collision)
-    CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+    CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
     CameraBoom->SetupAttachment(RootComponent);
     CameraBoom->TargetArmLength = 300.0f;        // The camera follows at this distance behind the character
     CameraBoom->bUsePawnControlRotation = true;  // Rotate the arm based on the controller
 
     // Create a follow camera
-    FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+    FollowCamera = CreateDefaultSubobject<UCameraComponent>("FollowCamera");
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);  // Attach the camera to the end of the boom and let the
                                                                                  // boom adjust to match the controller orientation
     FollowCamera->bUsePawnControlRotation = false;                               // Camera does not rotate relative to arm
@@ -58,7 +59,7 @@ AJenkinsTPSCharacter::AJenkinsTPSCharacter()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void AJenkinsTPSCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void AJenkinsTPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     // Set up gameplay key bindings
     check(PlayerInputComponent);
@@ -82,6 +83,66 @@ void AJenkinsTPSCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 
     // VR headset functionality
     PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AJenkinsTPSCharacter::OnResetVR);
+}
+
+void AJenkinsTPSCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+    
+    check(HealthData.MaxHealth > 0.0f);
+    Health = HealthData.MaxHealth;
+    OnTakeAnyDamage.AddDynamic(this, &AJenkinsTPSCharacter::OnAnyDamageReceived);
+}
+
+void AJenkinsTPSCharacter::OnAnyDamageReceived(
+    AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+    const auto IsAlive = [&]() {return Health > 0.0f;};
+    
+    if (Damage <= 0.0f || !IsAlive()) return;
+
+    Health = FMath::Clamp(Health - Damage, 0.0f, HealthData.MaxHealth);
+    if (IsAlive())
+    {
+        GetWorldTimerManager().SetTimer(HealTimerHandle, this, &AJenkinsTPSCharacter::OnHealing, HealthData.HealRate, true, HealthData.HealDelay);
+    }
+    else
+    {
+        OnDeath();
+    }
+}
+
+void AJenkinsTPSCharacter::OnHealing()
+{
+    Health = FMath::Clamp(Health + HealthData.HealRatio, 0.0f, HealthData.MaxHealth);
+    if (FMath::IsNearlyEqual(Health, HealthData.MaxHealth))
+    {
+        Health = HealthData.MaxHealth;
+        GetWorldTimerManager().ClearTimer(HealTimerHandle);
+    }
+}
+
+void AJenkinsTPSCharacter::OnDeath()
+{
+    GetWorldTimerManager().ClearTimer(HealTimerHandle);
+
+    check(GetCharacterMovement());
+    check(GetCapsuleComponent());
+    check(GetMesh());
+    GetCharacterMovement()->DisableMovement();
+    GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    GetMesh()->SetSimulatePhysics(true);
+    if (Controller)
+    {
+        Controller->ChangeState(NAME_Spectating);
+    }
+    SetLifeSpan(HealthData.LifeSpan);
+}
+
+float AJenkinsTPSCharacter::GetHealthPercent() const
+{
+    return Health / HealthData.MaxHealth;
 }
 
 void AJenkinsTPSCharacter::OnResetVR()
@@ -121,7 +182,7 @@ void AJenkinsTPSCharacter::LookUpAtRate(float Rate)
 
 void AJenkinsTPSCharacter::MoveForward(float Value)
 {
-    if ((Controller != nullptr) && (Value != 0.0f))
+    if (Controller && Value != 0.0f)
     {
         // find out which way is forward
         const FRotator Rotation = Controller->GetControlRotation();
@@ -135,7 +196,7 @@ void AJenkinsTPSCharacter::MoveForward(float Value)
 
 void AJenkinsTPSCharacter::MoveRight(float Value)
 {
-    if ((Controller != nullptr) && (Value != 0.0f))
+    if (Controller && Value != 0.0f)
     {
         // find out which way is right
         const FRotator Rotation = Controller->GetControlRotation();
