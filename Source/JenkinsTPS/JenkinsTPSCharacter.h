@@ -14,7 +14,6 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputComponent;
 
-
 UCLASS(config = Game)
 class AJenkinsTPSCharacter : public ACharacter
 {
@@ -78,24 +77,25 @@ public:
     /** Returns FollowCamera subobject **/
     FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+    UFUNCTION(BlueprintCallable, Category = "Health")
+    float GetHealthPercent() const;
+
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UTPSPickupComponent* PickupComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
     FHealthData HealthData;
-    
-    UFUNCTION(BlueprintCallable, Category = "Health")
-    float GetHealthPercent() const;
 
     virtual void BeginPlay() override;
-    
+
 private:
     float Health{0.0f};
     FTimerHandle HealTimerHandle;
 
     UFUNCTION()
-    void OnAnyDamageReceived(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+    void OnAnyDamageReceived(
+        AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
     void OnHealing();
     void OnDeath();

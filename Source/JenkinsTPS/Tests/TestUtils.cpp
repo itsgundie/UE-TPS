@@ -21,12 +21,9 @@ UWorld* TPS::Test::GetTestGameWorld()
     return nullptr;
 }
 
-FTPSUntilLatentCommand::FTPSUntilLatentCommand(TFunction<void()> InCallback, TFunction<void()> InTimeoutCallback, float InTimeout):
-Callback(MoveTemp(InCallback)),
-TimeoutCallback(MoveTemp(InTimeoutCallback)),
-Timeout(InTimeout)
+FTPSUntilLatentCommand::FTPSUntilLatentCommand(TFunction<void()> InCallback, TFunction<void()> InTimeoutCallback, float InTimeout)
+    : Callback(MoveTemp(InCallback)), TimeoutCallback(MoveTemp(InTimeoutCallback)), Timeout(InTimeout)
 {
-    
 }
 
 bool FTPSUntilLatentCommand::Update()
@@ -58,8 +55,8 @@ int32 GetActionBindingIndexByName(UInputComponent* InputComponent, const FString
 int32 GetAxisBindingIndexByName(UInputComponent* InputComponent, const FString& AxisName)
 {
     if (!InputComponent) return INDEX_NONE;
-    const int32 AxisIndex = InputComponent->AxisBindings.IndexOfByPredicate([=](const FInputAxisBinding& AxisBinding)
-        {return AxisBinding.AxisName.ToString().Equals(AxisName);});
+    const int32 AxisIndex = InputComponent->AxisBindings.IndexOfByPredicate(
+        [=](const FInputAxisBinding& AxisBinding) { return AxisBinding.AxisName.ToString().Equals(AxisName); });
     return AxisIndex;
 }
 

@@ -88,7 +88,7 @@ void AJenkinsTPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 void AJenkinsTPSCharacter::BeginPlay()
 {
     Super::BeginPlay();
-    
+
     check(HealthData.MaxHealth > 0.0f);
     Health = HealthData.MaxHealth;
     OnTakeAnyDamage.AddDynamic(this, &AJenkinsTPSCharacter::OnAnyDamageReceived);
@@ -97,14 +97,15 @@ void AJenkinsTPSCharacter::BeginPlay()
 void AJenkinsTPSCharacter::OnAnyDamageReceived(
     AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-    const auto IsAlive = [&]() {return Health > 0.0f;};
-    
+    const auto IsAlive = [&]() { return Health > 0.0f; };
+
     if (Damage <= 0.0f || !IsAlive()) return;
 
     Health = FMath::Clamp(Health - Damage, 0.0f, HealthData.MaxHealth);
     if (IsAlive())
     {
-        GetWorldTimerManager().SetTimer(HealTimerHandle, this, &AJenkinsTPSCharacter::OnHealing, HealthData.HealRate, true, HealthData.HealDelay);
+        GetWorldTimerManager().SetTimer(
+            HealTimerHandle, this, &AJenkinsTPSCharacter::OnHealing, HealthData.HealRate, true, HealthData.HealDelay);
     }
     else
     {

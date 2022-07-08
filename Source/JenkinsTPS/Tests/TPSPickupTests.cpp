@@ -35,7 +35,7 @@ namespace
 {
 constexpr char* PickupItemBPName = "Blueprint'/Game/Pickups/BP_TPSPickupItem.BP_TPSPickupItem'";
 constexpr char* PickupItemBPTestName = "Blueprint'/Game/Tests/BP_Test_TPSPickupItem.BP_Test_TPSPickupItem'";
-} // namespace
+}  // namespace
 
 using namespace TPS::Test;
 
@@ -76,10 +76,10 @@ bool FBlueprintShouldBeSetupCorrectly::RunTest(const FString& Parameters)
     TestTrueExpr(PickupItem->GetRootComponent() == CollisionComponent);
 
     ENUM_LOOP_START(ECollisionChannel, EElement)
-        if (EElement != ECC_OverlapAll_Deprecated)
-        {
-            TestTrueExpr(CollisionComponent->GetCollisionResponseToChannel(EElement) == ECollisionResponse::ECR_Overlap);
-        }
+    if (EElement != ECC_OverlapAll_Deprecated)
+    {
+        TestTrueExpr(CollisionComponent->GetCollisionResponseToChannel(EElement) == ECollisionResponse::ECR_Overlap);
+    }
     ENUM_LOOP_END
 
     const auto TextRendererComponent = PickupItem->FindComponentByClass<UTextRenderComponent>();
@@ -153,7 +153,6 @@ bool FPickupCanBeTaken::RunTest(const FString& Parameters)
     return true;
 }
 
-
 bool FEveryPickupHasMesh::RunTest(const FString& Parameters)
 {
     LevelScope("/Game/Tests/EmptyTestLevel");
@@ -163,23 +162,22 @@ bool FEveryPickupHasMesh::RunTest(const FString& Parameters)
 
     ENUM_LOOP_START(EPickupItemType, EElement)
 
-        const FTransform InitialTransform{FVector{120.0f * (pickupType + 1)}};
-        ATPSPickupItem* PickupItem = SpawnBlueprint<ATPSPickupItem>(World, PickupItemBPTestName, InitialTransform);
-        if (!TestNotNull("Pickup item exists", PickupItem)) return false;
+    const FTransform InitialTransform{FVector{120.0f * (pickupType + 1)}};
+    ATPSPickupItem* PickupItem = SpawnBlueprint<ATPSPickupItem>(World, PickupItemBPTestName, InitialTransform);
+    if (!TestNotNull("Pickup item exists", PickupItem)) return false;
 
-        const FPickupData PickupData{EElement, 42};
-        const FLinearColor PickupColor = FLinearColor::Gray;
-        CallFuncByNameWithParams(PickupItem, "SetPickupData", {PickupData.ToString(), PickupColor.ToString()});
+    const FPickupData PickupData{EElement, 42};
+    const FLinearColor PickupColor = FLinearColor::Gray;
+    CallFuncByNameWithParams(PickupItem, "SetPickupData", {PickupData.ToString(), PickupColor.ToString()});
 
-        const auto StaticMeshComponent = PickupItem->FindComponentByClass<UStaticMeshComponent>();
-        if (!TestNotNull("Static Mesh Component Exists", StaticMeshComponent)) return false;
+    const auto StaticMeshComponent = PickupItem->FindComponentByClass<UStaticMeshComponent>();
+    if (!TestNotNull("Static Mesh Component Exists", StaticMeshComponent)) return false;
 
-        const FString MeshMsg = FString::Printf(TEXT("Static Mesh for %s exists"), *UEnum::GetValueAsString(EElement));
-        TestNotNull(*MeshMsg, StaticMeshComponent->GetStaticMesh());
+    const FString MeshMsg = FString::Printf(TEXT("Static Mesh for %s exists"), *UEnum::GetValueAsString(EElement));
+    TestNotNull(*MeshMsg, StaticMeshComponent->GetStaticMesh());
     ENUM_LOOP_END
 
     return true;
 }
-
 
 #endif

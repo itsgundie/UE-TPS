@@ -23,7 +23,7 @@ struct FPickupData
     UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"))
     int32 Score;
 
-    FString ToString() const { return FString::Printf(TEXT("(Type=%i,Score=%i)"), Type, Score);}
+    FString ToString() const { return FString::Printf(TEXT("(Type=%i,Score=%i)"), Type, Score); }
 };
 
 USTRUCT(BlueprintType)
@@ -44,4 +44,7 @@ struct FHealthData
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "-5.0", Units = "s"))
     float HealDelay{-1.0f};
+
+    FString ToString() const { return FString::Printf(TEXT("(MaxHealth=%f,HealRatio=%f,HealRate=%f,LifeSpan=%f,HealDelay=%f)"),
+        MaxHealth, HealRatio, HealRate, LifeSpan, HealDelay);}
 };

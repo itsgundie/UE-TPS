@@ -39,7 +39,7 @@ bool FPickupCanBePickedWhileJumping::RunTest(const FString& Parameters)
 {
     const auto Level = LevelScope("/Game/Tests/PickupTestLevel_1");
     UWorld* World = GetTestGameWorld();
-    
+
     if (!TestNotNull("Game World Exists", World)) return false;
     ACharacter* Character = UGameplayStatics::GetPlayerCharacter(World, 0);
     if (!TestNotNull("Character Exists", Character)) return false;
@@ -48,12 +48,14 @@ bool FPickupCanBePickedWhileJumping::RunTest(const FString& Parameters)
     if (!TestEqual("Exists Only One Pickup", PickupItems.Num(), 1)) return false;
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(1.0f));
     ADD_LATENT_AUTOMATION_COMMAND(FJumpLatentCommand(Character));
-    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand([=]()
-    {
-        TArray<AActor*> PickupItems;
-        UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-        TestTrueExpr(PickupItems.Num() == 0);
-    }, 2.0f));
+    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
+        [=]()
+        {
+            TArray<AActor*> PickupItems;
+            UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
+            TestTrueExpr(PickupItems.Num() == 0);
+        },
+        2.0f));
     return true;
 }
 
@@ -61,7 +63,7 @@ bool FTooHighPickupCantBePickedWhileJumping::RunTest(const FString& Parameters)
 {
     const auto Level = LevelScope("/Game/Tests/PickupTestLevel_2");
     UWorld* World = GetTestGameWorld();
-    
+
     if (!TestNotNull("Game World Exists", World)) return false;
     ACharacter* Character = UGameplayStatics::GetPlayerCharacter(World, 0);
     if (!TestNotNull("Character Exists", Character)) return false;
@@ -70,12 +72,14 @@ bool FTooHighPickupCantBePickedWhileJumping::RunTest(const FString& Parameters)
     if (!TestEqual("Exists Only One Pickup", PickupItems.Num(), 1)) return false;
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(1.0f));
     ADD_LATENT_AUTOMATION_COMMAND(FJumpLatentCommand(Character));
-    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand([=]()
-    {
-        TArray<AActor*> PickupItems;
-        UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-        TestTrueExpr(PickupItems.Num() == 1);
-    }, 2.0f));
+    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
+        [=]()
+        {
+            TArray<AActor*> PickupItems;
+            UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
+            TestTrueExpr(PickupItems.Num() == 1);
+        },
+        2.0f));
     return true;
 }
 
@@ -83,7 +87,7 @@ bool FAllPickupsCanBeTakenWhileMoving::RunTest(const FString& Parameters)
 {
     const auto Level = LevelScope("/Game/Tests/PickupTestLevel_3");
     UWorld* World = GetTestGameWorld();
-    
+
     if (!TestNotNull("Game World Exists", World)) return false;
     ACharacter* Character = UGameplayStatics::GetPlayerCharacter(World, 0);
     if (!TestNotNull("Character Exists", Character)) return false;
@@ -96,24 +100,21 @@ bool FAllPickupsCanBeTakenWhileMoving::RunTest(const FString& Parameters)
     TestTrueExpr(MoveRightIndex != INDEX_NONE);
     Character->InputComponent->AxisBindings[MoveForwardIndex].AxisDelegate.Execute(1.0f);
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(1.0f));
-    ADD_LATENT_AUTOMATION_COMMAND(FTPSUntilLatentCommand([=]()
-    {
-        Character->InputComponent->AxisBindings[MoveForwardIndex].AxisDelegate.Execute(1.0f);
-    }, [](){}, 3.0f));
+    ADD_LATENT_AUTOMATION_COMMAND(FTPSUntilLatentCommand(
+        [=]() { Character->InputComponent->AxisBindings[MoveForwardIndex].AxisDelegate.Execute(1.0f); }, []() {}, 3.0f));
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(1.0f));
     ADD_LATENT_AUTOMATION_COMMAND(FJumpLatentCommand(Character));
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(2.0f));
-    ADD_LATENT_AUTOMATION_COMMAND(FTPSUntilLatentCommand([=]()
-        {
-        Character->InputComponent->AxisBindings[MoveRightIndex].AxisDelegate.Execute(1.0f);
-        }, [](){}, 2.5f));
+    ADD_LATENT_AUTOMATION_COMMAND(FTPSUntilLatentCommand(
+        [=]() { Character->InputComponent->AxisBindings[MoveRightIndex].AxisDelegate.Execute(1.0f); }, []() {}, 2.5f));
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(1.0f));
-    ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand([=]()
+    ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
+        [=]()
         {
-        TArray<AActor*> PickupItems;
-        UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-        TestTrueExpr(PickupItems.Num() == 6);
-        return true;
+            TArray<AActor*> PickupItems;
+            UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
+            TestTrueExpr(PickupItems.Num() == 6);
+            return true;
         }));
     return true;
 }

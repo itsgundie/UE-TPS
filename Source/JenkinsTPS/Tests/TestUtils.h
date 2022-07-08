@@ -32,6 +32,13 @@ T* SpawnBlueprint(UWorld* World, const FString& Name, const FTransform& Transfor
     return (World && BlueprintToSpawn) ? World->SpawnActor<T>(BlueprintToSpawn->GeneratedClass, Transform) : nullptr;
 }
 
+template <typename T>
+T* SpawnBlueprintDeferred(UWorld* World, const FString& Name, const FTransform& Transform = FTransform::Identity)
+{
+    const UBlueprint* BlueprintToSpawn = LoadObject<UBlueprint>(nullptr, *Name);
+    return (World && BlueprintToSpawn) ? World->SpawnActorDeferred<T>(BlueprintToSpawn->GeneratedClass, Transform) : nullptr;
+}
+
 class LevelScope
 {
 public:
