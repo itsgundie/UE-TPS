@@ -27,7 +27,7 @@ bool FHealthDecreasedByDamage::RunTest(const FString& Parameters)
     UWorld* World = GetTestGameWorld();
     if (!TestNotNull("Game World Exists", World)) return false;
 
-    const FTransform InitialTransform{FVector{0.0f, -120.0f, 100.0f}};
+    const FTransform InitialTransform{FVector{0.0f, -120.0f, 200.0f}};
     AJenkinsTPSCharacter* TestCharacter = SpawnBlueprintDeferred<AJenkinsTPSCharacter>(World, TestCharacterBPName, InitialTransform);
     if (!TestNotNull("Test Character item exists", TestCharacter)) return false;
 
