@@ -1,6 +1,5 @@
 // My game copyright
 
-#include "GameFramework/CharacterMovementComponent.h"
 #if WITH_AUTOMATION_TESTS
 
 #include "JenkinsTPS/Tests/TPSCharacterTests.h"

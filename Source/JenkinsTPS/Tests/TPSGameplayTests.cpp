@@ -20,9 +20,13 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FTooHighPickupCantBePickedWhileJumping, "TPSGam
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAllPickupsCanBeTakenWhileMoving, "TPSGame.Gameplay.AllPickupsCanBeTakenWhileMoving",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
+IMPLEMENT_COMPLEX_AUTOMATION_TEST(FAllMapsShouldBeLoaded, "TPSGame.Gameplay.AllMapsShouldBeLoaded",
+    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
+
 using namespace TPS::Test;
 
 DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER(FJumpLatentCommand, ACharacter*, Character);
+
 bool FJumpLatentCommand::Update()
 {
     if (!Character) return true;
@@ -51,9 +55,9 @@ bool FPickupCanBePickedWhileJumping::RunTest(const FString& Parameters)
     ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
         [=]()
         {
-            TArray<AActor*> PickupItems;
-            UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-            TestTrueExpr(PickupItems.Num() == 0);
+        TArray<AActor*> PickupItems;
+        UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
+        TestTrueExpr(PickupItems.Num() == 0);
         },
         2.0f));
     return true;
@@ -75,9 +79,9 @@ bool FTooHighPickupCantBePickedWhileJumping::RunTest(const FString& Parameters)
     ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
         [=]()
         {
-            TArray<AActor*> PickupItems;
-            UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-            TestTrueExpr(PickupItems.Num() == 1);
+        TArray<AActor*> PickupItems;
+        UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
+        TestTrueExpr(PickupItems.Num() == 1);
         },
         2.0f));
     return true;
@@ -111,12 +115,34 @@ bool FAllPickupsCanBeTakenWhileMoving::RunTest(const FString& Parameters)
     ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
         [=]()
         {
-            TArray<AActor*> PickupItems;
-            UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-            TestTrueExpr(PickupItems.Num() == 6);
-            return true;
+        TArray<AActor*> PickupItems;
+        UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
+        TestTrueExpr(PickupItems.Num() == 6);
+        return true;
         }));
     return true;
 }
+
+void FAllMapsShouldBeLoaded::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
+{
+    const TArray<TTuple<FString, FString>> TestData =
+    {
+        MakeTuple("MainMap", "/Game/ThirdPersonCPP/Maps/MainMap.MainMap"),
+        MakeTuple("CustomMap", "/Game/ThirdPersonCPP/Maps/CustomMap.CustomMap")
+    };
+    for (const auto OneTestData : TestData)
+    {
+        OutBeautifiedNames.Add(OneTestData.Key);
+        OutTestCommands.Add(OneTestData.Value);
+    }
+}
+
+bool FAllMapsShouldBeLoaded::RunTest(const FString& Parameters)
+{
+    const auto Level = LevelScope(Parameters);
+    ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(4.2f));
+    return true;
+}
+
 
 #endif
