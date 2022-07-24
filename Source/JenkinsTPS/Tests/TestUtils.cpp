@@ -72,6 +72,11 @@ void CallFuncByNameWithParams(UObject* Object, const FString& FuncName, const TA
     FOutputDeviceNull OutputDeviceNull;
     Object->CallFunctionByNameWithArguments(*Command, OutputDeviceNull, nullptr, true);
 }
+
+FString GetTestDataDir()
+{
+    return FPaths::GameSourceDir().Append("JenkinsTPS/Tests/Data/");
+}
 }  // namespace Test
 }  // namespace TPS
 #endif

@@ -15,7 +15,7 @@ public class JenkinsTPS : ModuleRules
         Console.WriteLine("Branch name {0}", Target.Version.BranchName);
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Json", "JsonUtilities" });
 
         if (Target.Type == TargetType.Editor)
         {

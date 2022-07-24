@@ -11,6 +11,9 @@ namespace TPS
 {
 namespace Test
 {
+
+DEFINE_LOG_CATEGORY_STATIC(LogTestUtils, All, All);
+
 template <typename Type1, typename TYpe2>
 struct TestPayLoad
 {
@@ -66,6 +69,8 @@ int32 GetActionBindingIndexByName(UInputComponent* InputComponent, const FString
 int32 GetAxisBindingIndexByName(UInputComponent* InputComponent, const FString& AxisName);
 
 void CallFuncByNameWithParams(UObject* Object, const FString& FuncName, const TArray<FString>& Params);
+
+FString GetTestDataDir();
 }  // namespace Test
 }  // namespace TPS
 #endif
