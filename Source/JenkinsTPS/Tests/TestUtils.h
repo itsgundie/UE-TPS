@@ -11,7 +11,6 @@ namespace TPS
 {
 namespace Test
 {
-
 DEFINE_LOG_CATEGORY_STATIC(LogTestUtils, All, All);
 
 template <typename Type1, typename TYpe2>
@@ -23,10 +22,20 @@ struct TestPayLoad
 };
 
 #define ENUM_LOOP_START(TYPE, EnumElement)                                                   \
-    for (auto pickupType = 0; pickupType < StaticEnum<TYPE>()->NumEnums() - 1; pickupType++) \
+    for (auto Index = 0; Index < StaticEnum<TYPE>()->NumEnums() - 1; ++Index) \
     {                                                                                        \
-        const auto EnumElement = static_cast<TYPE>(pickupType);
+        const auto EnumElement = static_cast<TYPE>(StaticEnum<TYPE>()->GetValueByIndex(Index));
 #define ENUM_LOOP_END }
+
+template <typename EnumType, typename FunctionType>
+void ForEach(FunctionType&& Function)
+{
+    const UEnum* Enum = StaticEnum<EnumType>();
+    for (auto i = 0; i < Enum->NumEnums(); ++i)
+    {
+        Function(static_cast<EnumType>(Enum->GetValueByIndex(i)));
+    }
+}
 
 template <typename T>
 T* SpawnBlueprint(UWorld* World, const FString& Name, const FTransform& Transform = FTransform::Identity)
@@ -46,7 +55,11 @@ class LevelScope
 {
 public:
     LevelScope(const FString& MapName) { AutomationOpenMap(MapName); }
-    ~LevelScope() { ADD_LATENT_AUTOMATION_COMMAND(FExitGameCommand); }
+
+    ~LevelScope()
+    {
+        ADD_LATENT_AUTOMATION_COMMAND(FExitGameCommand);
+    }
 };
 
 UWorld* GetTestGameWorld();
@@ -71,6 +84,6 @@ int32 GetAxisBindingIndexByName(UInputComponent* InputComponent, const FString& 
 void CallFuncByNameWithParams(UObject* Object, const FString& FuncName, const TArray<FString>& Params);
 
 FString GetTestDataDir();
-}  // namespace Test
-}  // namespace TPS
+} // namespace Test
+} // namespace TPS
 #endif

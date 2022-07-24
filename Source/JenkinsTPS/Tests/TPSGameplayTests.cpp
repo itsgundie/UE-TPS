@@ -23,7 +23,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FTooHighPickupCantBePickedWhileJumping, "TPSGam
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAllPickupsCanBeTakenWhileMoving, "TPSGame.Gameplay.AllPickupsCanBeTakenWhileMoving",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAllPickupsCanBeTakenWhileRecordedMoving, "TPSGame.Gameplay.AllPickupsCanBeTakenWhileRecordedMoving",
+IMPLEMENT_COMPLEX_AUTOMATION_TEST(FAllPickupsCanBeTakenWhileRecordedMoving, "TPSGame.Gameplay.AllPickupsCanBeTakenWhileRecordedMoving",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
 IMPLEMENT_COMPLEX_AUTOMATION_TEST(FAllMapsShouldBeLoaded, "TPSGame.Gameplay.AllMapsShouldBeLoaded",
@@ -129,13 +129,12 @@ bool FAllPickupsCanBeTakenWhileMoving::RunTest(const FString& Parameters)
     return true;
 }
 
-class FSimulateMovementLatentCommand: public IAutomationLatentCommand
+class FSimulateMovementLatentCommand : public IAutomationLatentCommand
 {
 public:
     FSimulateMovementLatentCommand(UWorld* InWorld, UInputComponent* InInputComponent, const TArray<FBindingsData>& InBindingsData)
-        :World(InWorld), InputComponent(InInputComponent), BindingsData(InBindingsData)
+        : World(InWorld), InputComponent(InInputComponent), BindingsData(InBindingsData)
     {
-        
     }
 
     virtual bool Update() override
@@ -156,6 +155,7 @@ public:
         }
         return false;
     }
+
 private:
     const UWorld* World;
     const UInputComponent* InputComponent;
@@ -164,9 +164,35 @@ private:
     float WorldsStartTime{0.0f};
 };
 
+void FAllPickupsCanBeTakenWhileRecordedMoving::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
+{
+    struct FTestData
+    {
+        FString TestName;
+        FString MapPath;
+        FString JsonName;
+    };
+
+    const TArray<FTestData> TestData =
+    {
+        {"MainMap", "/Game/ThirdPersonCPP/Maps/MainMap.MainMap", "CharacterTestInputMainMap.json"},
+        {"CustomMap", "/Game/ThirdPersonCPP/Maps/CustomMap.CustomMap", "CharactersTestInputCustomMap.json"}
+    };
+
+    for (const auto OneTestData : TestData)
+    {
+        OutBeautifiedNames.Add(OneTestData.TestName);
+        OutTestCommands.Add(FString::Printf(TEXT("%s,%s"), *OneTestData.MapPath, *OneTestData.JsonName));
+    }
+}
+
 bool FAllPickupsCanBeTakenWhileRecordedMoving::RunTest(const FString& Parameters)
 {
-    const auto Level = LevelScope("/Game/ThirdPersonCPP/Maps/CustomMap");
+    TArray<FString> ParsedParams;
+    Parameters.ParseIntoArray(ParsedParams, TEXT(","));
+    if (!TestTrue("Map name and JSON params should exists", ParsedParams.Num() == 2)) return false;
+    
+    const auto Level = LevelScope(ParsedParams[0]);
     UWorld* World = GetTestGameWorld();
     if (!TestNotNull("Game World Exists", World)) return false;
     ACharacter* Character = UGameplayStatics::GetPlayerCharacter(World, 0);
@@ -175,7 +201,7 @@ bool FAllPickupsCanBeTakenWhileRecordedMoving::RunTest(const FString& Parameters
     UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
     TestTrueExpr(PickupItems.Num() == 4);
 
-    const FString FileName = GetTestSourceFileName().Append("CharactersTestInput.json");
+    const FString FileName = GetTestDataDir().Append(ParsedParams[1]);
     FInputData InputData;
     if (!JsonUtils::ReadInputData(FileName, InputData)) return false;
     if (!TestTrue("Input Data is not empty", InputData.Bindings.Num() > 0)) return false;
@@ -188,13 +214,13 @@ bool FAllPickupsCanBeTakenWhileRecordedMoving::RunTest(const FString& Parameters
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(2.5f));
     ADD_LATENT_AUTOMATION_COMMAND(FSimulateMovementLatentCommand(World, Character->InputComponent, InputData.Bindings));
     ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
-    [=]()
-    {
-    TArray<AActor*> PickupItems;
-    UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-    TestTrueExpr(PickupItems.Num() == 4);
-    return true;
-    }));
+        [=]()
+        {
+        TArray<AActor*> PickupItems;
+        UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
+        TestTrueExpr(PickupItems.Num() == 4);
+        return true;
+        }));
     return true;
 }
 

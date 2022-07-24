@@ -64,9 +64,8 @@ bool FPickupScoreIsZeroDyDefault::RunTest(const FString& Parameters)
     {
         return false;
     }
-    ENUM_LOOP_START(EPickupItemType, EEnumElement)
-    TestTrueExpr(PickupComponent->GetItemCountByType(EEnumElement) == 0);
-    ENUM_LOOP_END
+    ForEach<EPickupItemType>([&](EPickupItemType EEnumElement)
+        {TestTrueExpr(PickupComponent->GetItemCountByType(EEnumElement) == 0);});
     return true;
 }
 

@@ -162,7 +162,7 @@ bool FEveryPickupHasMesh::RunTest(const FString& Parameters)
 
     ENUM_LOOP_START(EPickupItemType, EElement)
 
-    const FTransform InitialTransform{FVector{120.0f * (pickupType + 1)}};
+    const FTransform InitialTransform{FVector{120.0f * (Index + 1)}};
     ATPSPickupItem* PickupItem = SpawnBlueprint<ATPSPickupItem>(World, PickupItemBPTestName, InitialTransform);
     if (!TestNotNull("Pickup item exists", PickupItem)) return false;
 
