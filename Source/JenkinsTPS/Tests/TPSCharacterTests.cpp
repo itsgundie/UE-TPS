@@ -38,7 +38,7 @@ using namespace TPS::Test;
 namespace
 {
 constexpr char* TestCharacterBPName = "Blueprint'/Game/Tests/BP_Test_TPSCharacter.BP_Test_TPSCharacter'";
-} // namespace
+}  // namespace
 
 bool FHealthDecreasedByDamage::RunTest(const FString& Parameters)
 {
@@ -102,21 +102,23 @@ bool FCharacterCanBeKilled::RunTest(const FString& Parameters)
     TestEqual("Health equal zero, character is dead", TestCharacter->GetHealthPercent(), 0.0f);
     TestTrueExpr(TestCharacter->GetCharacterMovement()->MovementMode == EMovementMode::MOVE_None);
     ENUM_LOOP_START(ECollisionChannel, EElement)
-        if (EElement != ECC_OverlapAll_Deprecated)
-        {
-            TestTrueExpr(TestCharacter->GetCapsuleComponent()->GetCollisionResponseToChannel(EElement) == ECollisionResponse::ECR_Ignore);
-        }
+    if (EElement != ECC_OverlapAll_Deprecated)
+    {
+        TestTrueExpr(TestCharacter->GetCapsuleComponent()->GetCollisionResponseToChannel(EElement) == ECollisionResponse::ECR_Ignore);
+    }
     ENUM_LOOP_END
     TestTrueExpr(TestCharacter->GetMesh()->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics);
     TestTrueExpr(TestCharacter->GetMesh()->IsSimulatingPhysics());
     TestTrueExpr(FMath::IsNearlyEqual(TestCharacter->GetLifeSpan(), HealthData.LifeSpan));
-    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand([TestCharacter]()
+    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
+        [TestCharacter]()
         {
-        if (IsValid(TestCharacter))
-        {
-        UE_LOG(LogTPSCharacterStatic, Error, TEXT("Character wasn't destroyed"));
-        }
-        }, HealthData.LifeSpan));
+            if (IsValid(TestCharacter))
+            {
+                UE_LOG(LogTPSCharacterStatic, Error, TEXT("Character wasn't destroyed"));
+            }
+        },
+        HealthData.LifeSpan));
     return true;
 }
 
@@ -161,16 +163,17 @@ bool FAutoHealShouldRestoreHealth::RunTest(const FString& Parameters)
 
     const float HealthDiff = HealthData.MaxHealth * (1.0f - TestCharacter->GetHealthPercent());
     const float HealingDuration = HealthData.HealRate * HealthDiff / HealthData.HealRatio;
-    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand([TestCharacter]()
+    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
+        [TestCharacter]()
         {
-        if (!FMath::IsNearlyEqual(TestCharacter->GetHealthPercent(), 1.0f))
-        {
-        UE_LOG(LogTPSCharacterStatic, Error, TEXT("Character's health wasn't recovered to full"));
-        }
-        }, HealingDuration));
+            if (!FMath::IsNearlyEqual(TestCharacter->GetHealthPercent(), 1.0f))
+            {
+                UE_LOG(LogTPSCharacterStatic, Error, TEXT("Character's health wasn't recovered to full"));
+            }
+        },
+        HealingDuration));
     return true;
 }
-
 
 bool FLatentCommandSimpleWait::RunTest(const FString& Parameters)
 {
@@ -185,7 +188,6 @@ bool FTPSLatentLogCommand::Update()
     UE_LOG(LogTPSCharacterStatic, Display, TEXT("%s"), *LogMessage);
     return true;
 }
-
 
 bool FLatentCommandSimpleLog::RunTest(const FString& Parameters)
 {
@@ -203,6 +205,5 @@ bool FLatentCommandOpenCloseMap::RunTest(const FString& Parameters)
     ADD_LATENT_AUTOMATION_COMMAND(FWaitLatentCommand(4.2f));
     return true;
 }
-
 
 #endif

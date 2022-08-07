@@ -21,9 +21,9 @@ struct TestPayLoad
     float Tolerance = KINDA_SMALL_NUMBER;
 };
 
-#define ENUM_LOOP_START(TYPE, EnumElement)                                                   \
+#define ENUM_LOOP_START(TYPE, EnumElement)                                    \
     for (auto Index = 0; Index < StaticEnum<TYPE>()->NumEnums() - 1; ++Index) \
-    {                                                                                        \
+    {                                                                         \
         const auto EnumElement = static_cast<TYPE>(StaticEnum<TYPE>()->GetValueByIndex(Index));
 #define ENUM_LOOP_END }
 
@@ -56,10 +56,7 @@ class LevelScope
 public:
     LevelScope(const FString& MapName) { AutomationOpenMap(MapName); }
 
-    ~LevelScope()
-    {
-        ADD_LATENT_AUTOMATION_COMMAND(FExitGameCommand);
-    }
+    ~LevelScope() { ADD_LATENT_AUTOMATION_COMMAND(FExitGameCommand); }
 };
 
 UWorld* GetTestGameWorld();
@@ -84,6 +81,6 @@ int32 GetAxisBindingIndexByName(UInputComponent* InputComponent, const FString& 
 void CallFuncByNameWithParams(UObject* Object, const FString& FuncName, const TArray<FString>& Params);
 
 FString GetTestDataDir();
-} // namespace Test
-} // namespace TPS
+}  // namespace Test
+}  // namespace TPS
 #endif

@@ -11,13 +11,14 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGamePauseDelegate, bool, isPaused
 UCLASS()
 class JENKINSTPS_API ATPSPlayerController : public APlayerController
 {
-	GENERATED_BODY()
-    
+    GENERATED_BODY()
+
 public:
     void ToogleGamePause();
 
     UPROPERTY(BlueprintAssignable)
     FOnGamePauseDelegate OnGamePause;
+
 protected:
     virtual void SetupInputComponent() override;
 

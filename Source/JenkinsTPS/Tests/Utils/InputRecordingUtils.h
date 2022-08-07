@@ -26,7 +26,7 @@ struct FBindingsData
     TArray<FAxisData> AxisValues;
 
     // TODO ActionValues
-    
+
     UPROPERTY()
     float WorldTime{0.0f};
 };

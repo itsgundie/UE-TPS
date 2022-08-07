@@ -61,9 +61,9 @@ bool FPickupCanBePickedWhileJumping::RunTest(const FString& Parameters)
     ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
         [=]()
         {
-        TArray<AActor*> PickupItems;
-        UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-        TestTrueExpr(PickupItems.Num() == 0);
+            TArray<AActor*> PickupItems;
+            UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
+            TestTrueExpr(PickupItems.Num() == 0);
         },
         2.0f));
     return true;
@@ -85,9 +85,9 @@ bool FTooHighPickupCantBePickedWhileJumping::RunTest(const FString& Parameters)
     ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
         [=]()
         {
-        TArray<AActor*> PickupItems;
-        UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-        TestTrueExpr(PickupItems.Num() == 1);
+            TArray<AActor*> PickupItems;
+            UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
+            TestTrueExpr(PickupItems.Num() == 1);
         },
         2.0f));
     return true;
@@ -121,10 +121,10 @@ bool FAllPickupsCanBeTakenWhileMoving::RunTest(const FString& Parameters)
     ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
         [=]()
         {
-        TArray<AActor*> PickupItems;
-        UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-        TestTrueExpr(PickupItems.Num() == 6);
-        return true;
+            TArray<AActor*> PickupItems;
+            UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
+            TestTrueExpr(PickupItems.Num() == 6);
+            return true;
         }));
     return true;
 }
@@ -173,11 +173,8 @@ void FAllPickupsCanBeTakenWhileRecordedMoving::GetTests(TArray<FString>& OutBeau
         FString JsonName;
     };
 
-    const TArray<FTestData> TestData =
-    {
-        {"MainMap", "/Game/ThirdPersonCPP/Maps/MainMap.MainMap", "CharacterTestInputMainMap.json"},
-        {"CustomMap", "/Game/ThirdPersonCPP/Maps/CustomMap.CustomMap", "CharactersTestInputCustomMap.json"}
-    };
+    const TArray<FTestData> TestData = {{"MainMap", "/Game/ThirdPersonCPP/Maps/MainMap.MainMap", "CharacterTestInputMainMap.json"},
+        {"CustomMap", "/Game/ThirdPersonCPP/Maps/CustomMap.CustomMap", "CharactersTestInputCustomMap.json"}};
 
     for (const auto OneTestData : TestData)
     {
@@ -191,7 +188,7 @@ bool FAllPickupsCanBeTakenWhileRecordedMoving::RunTest(const FString& Parameters
     TArray<FString> ParsedParams;
     Parameters.ParseIntoArray(ParsedParams, TEXT(","));
     if (!TestTrue("Map name and JSON params should exists", ParsedParams.Num() == 2)) return false;
-    
+
     const auto Level = LevelScope(ParsedParams[0]);
     UWorld* World = GetTestGameWorld();
     if (!TestNotNull("Game World Exists", World)) return false;
@@ -216,22 +213,18 @@ bool FAllPickupsCanBeTakenWhileRecordedMoving::RunTest(const FString& Parameters
     ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
         [=]()
         {
-        TArray<AActor*> PickupItems;
-        UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-        TestTrueExpr(PickupItems.Num() == 4);
-        return true;
+            TArray<AActor*> PickupItems;
+            UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
+            TestTrueExpr(PickupItems.Num() == 4);
+            return true;
         }));
     return true;
 }
 
-
 void FAllMapsShouldBeLoaded::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
 {
-    const TArray<TTuple<FString, FString>> TestData =
-    {
-        MakeTuple("MainMap", "/Game/ThirdPersonCPP/Maps/MainMap.MainMap"),
-        MakeTuple("CustomMap", "/Game/ThirdPersonCPP/Maps/CustomMap.CustomMap")
-    };
+    const TArray<TTuple<FString, FString>> TestData = {MakeTuple("MainMap", "/Game/ThirdPersonCPP/Maps/MainMap.MainMap"),
+        MakeTuple("CustomMap", "/Game/ThirdPersonCPP/Maps/CustomMap.CustomMap")};
     for (const auto OneTestData : TestData)
     {
         OutBeautifiedNames.Add(OneTestData.Key);
@@ -245,6 +238,5 @@ bool FAllMapsShouldBeLoaded::RunTest(const FString& Parameters)
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(4.2f));
     return true;
 }
-
 
 #endif

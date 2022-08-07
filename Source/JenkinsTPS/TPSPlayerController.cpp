@@ -1,6 +1,5 @@
 // TPS Game For Unreal Automation
 
-
 #include "TPSPlayerController.h"
 
 void ATPSPlayerController::SetupInputComponent()
@@ -16,8 +15,6 @@ void ATPSPlayerController::ToogleGamePause()
     bInPause = !bInPause;
     SetPause(bInPause);
     bShowMouseCursor = bInPause;
-    bInPause
-        ? SetInputMode(FInputModeGameAndUI().SetHideCursorDuringCapture(false))
-        : SetInputMode(FInputModeGameOnly());
+    bInPause ? SetInputMode(FInputModeGameAndUI().SetHideCursorDuringCapture(false)) : SetInputMode(FInputModeGameOnly());
     OnGamePause.Broadcast(bInPause);
 }

@@ -1,6 +1,5 @@
 // TPS Game For Unreal Automation
 
-
 #include "Settings/TPSGameSetting.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogTPSGameSetting, All, All);
@@ -81,5 +80,5 @@ void UTPSGameSetting::SerCurrentValue(int32 Value)
 int32 UTPSGameSetting::GetCurrentIndex() const
 {
     const int32 CurrentValue = GetCurrentValue();
-    return Options.IndexOfByPredicate([&](const auto& Opt) {return CurrentValue == Opt.Value;});
+    return Options.IndexOfByPredicate([&](const auto& Opt) { return CurrentValue == Opt.Value; });
 }

@@ -14,7 +14,7 @@ class UButton;
 UCLASS()
 class JENKINSTPS_API UVideoSettingsWidget : public UUserWidget
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 protected:
     UPROPERTY(meta = (BindWidget))

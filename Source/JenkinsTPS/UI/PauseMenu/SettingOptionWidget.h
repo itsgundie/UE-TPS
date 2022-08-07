@@ -15,18 +15,18 @@ class UButton;
 UCLASS()
 class JENKINSTPS_API USettingOptionWidget : public UUserWidget
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 protected:
     UPROPERTY(meta = (BindWidget))
     UTextBlock* SettingDisplayName;
-    
+
     UPROPERTY(meta = (BindWidget))
     UTextBlock* SettingCurrentValue;
-    
+
     UPROPERTY(meta = (BindWidget))
     UButton* NextSettingButton;
-    
+
     UPROPERTY(meta = (BindWidget))
     UButton* PrevSettingButton;
 
@@ -41,9 +41,9 @@ private:
 
     UFUNCTION()
     void OnNextSetting();
-    
+
     UFUNCTION()
     void OnPreviousSetting();
-    
+
     friend class UVideoSettingsWidget;
 };

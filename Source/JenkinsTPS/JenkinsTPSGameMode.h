@@ -6,7 +6,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "JenkinsTPSGameMode.generated.h"
 
-
 UCLASS(minimalapi)
 class AJenkinsTPSGameMode : public AGameModeBase
 {

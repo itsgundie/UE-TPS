@@ -1,6 +1,5 @@
 // TPS Game For Unreal Automation
 
-
 #include "UI/PauseMenu/VideoSettingsWidget.h"
 
 #include "Components/Button.h"
@@ -26,7 +25,7 @@ void UVideoSettingsWidget::NativeOnInitialized()
     check(VideoSettingsContainer);
     VideoSettingsContainer->ClearChildren();
 
-    for (auto* Setting: VideoSettings)
+    for (auto* Setting : VideoSettings)
     {
         const auto SettingWidget = CreateWidget<USettingOptionWidget>(this, SettingOptionWidgetClass);
         check(SettingWidget);
@@ -51,7 +50,7 @@ void UVideoSettingsWidget::OnBenchmark()
 void UVideoSettingsWidget::OnVideoSettingsUpdated()
 {
     if (!VideoSettingsContainer) return;
-    for (auto* Widget: VideoSettingsContainer->GetAllChildren())
+    for (auto* Widget : VideoSettingsContainer->GetAllChildren())
     {
         if (auto* SettingOptionWidget = Cast<USettingOptionWidget>(Widget))
         {
