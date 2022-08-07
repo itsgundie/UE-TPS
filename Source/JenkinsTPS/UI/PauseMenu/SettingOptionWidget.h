@@ -10,6 +10,7 @@
 
 class UTextBlock;
 class UTPSGameSetting;
+class UButton;
 
 UCLASS()
 class JENKINSTPS_API USettingOptionWidget : public UUserWidget
@@ -22,6 +23,12 @@ protected:
     
     UPROPERTY(meta = (BindWidget))
     UTextBlock* SettingCurrentValue;
+    
+    UPROPERTY(meta = (BindWidget))
+    UButton* NextSettingButton;
+    
+    UPROPERTY(meta = (BindWidget))
+    UButton* PrevSettingButton;
 
     virtual void NativeOnInitialized() override;
 
@@ -32,5 +39,11 @@ private:
 
     void UpdateTexts();
 
+    UFUNCTION()
+    void OnNextSetting();
+    
+    UFUNCTION()
+    void OnPreviousSetting();
+    
     friend class UVideoSettingsWidget;
 };

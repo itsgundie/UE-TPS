@@ -8,6 +8,8 @@
 
 class UTPSGameSetting;
 
+DECLARE_MULTICAST_DELEGATE(FOnSettingsUpdatedDelegate);
+
 UCLASS()
 class JENKINSTPS_API UTPSGameUserSettings : public UGameUserSettings
 {
@@ -18,6 +20,9 @@ public:
     static  UTPSGameUserSettings* Get();
 
     const TArray<UTPSGameSetting*>& GetVideoSettings() const;
+
+    void RunBenchmark();
+    FOnSettingsUpdatedDelegate OnVideoSettingsUpdated;
 
 private:
     UPROPERTY()

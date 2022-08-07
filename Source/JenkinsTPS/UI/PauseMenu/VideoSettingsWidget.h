@@ -9,6 +9,7 @@
 
 class UVerticalBox;
 class USettingOptionWidget;
+class UButton;
 
 UCLASS()
 class JENKINSTPS_API UVideoSettingsWidget : public UUserWidget
@@ -22,5 +23,14 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
     TSubclassOf<USettingOptionWidget> SettingOptionWidgetClass;
 
+    UPROPERTY(meta = (BindWidget))
+    UButton* RunBenchmarkButton;
+
     virtual void NativeOnInitialized() override;
+
+private:
+    UFUNCTION()
+    void OnBenchmark();
+
+    void OnVideoSettingsUpdated();
 };

@@ -13,23 +13,3 @@ AJenkinsTPSGameMode::AJenkinsTPSGameMode()
         DefaultPawnClass = PlayerPawnBPClass.Class;
     }
 }
-
-bool AJenkinsTPSGameMode::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate)
-{
-    const bool Succeed = Super::SetPause(PC, CanUnpauseDelegate);
-    if (Succeed)
-    {
-        OnGamePause.Broadcast(true);
-    }
-    return Succeed; 
-}
-
-bool AJenkinsTPSGameMode::ClearPause()
-{
-    const bool Succeed = Super::ClearPause();
-    if (Succeed)
-    {
-        OnGamePause.Broadcast(false);
-    }
-    return Succeed; 
-}
