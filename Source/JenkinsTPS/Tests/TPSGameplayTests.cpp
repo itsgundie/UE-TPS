@@ -31,17 +31,10 @@ IMPLEMENT_COMPLEX_AUTOMATION_TEST(FAllMapsShouldBeLoaded, "TPSGame.Gameplay.AllM
 
 using namespace TPS::Test;
 
-DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER(FJumpLatentCommand, ACharacter*, Character);
-
+DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER(FJumpLatentCommand, UInputComponent*, InputComponent);
 bool FJumpLatentCommand::Update()
 {
-    if (!Character) return true;
-    const int32 ActionIndex = GetActionBindingIndexByName(Character->InputComponent, "Jump", EInputEvent::IE_Pressed);
-    if (ActionIndex != INDEX_NONE)
-    {
-        const auto JumpActionBind = Character->InputComponent->GetActionBinding(ActionIndex);
-        JumpActionBind.ActionDelegate.Execute(EKeys::SpaceBar);
-    }
+    JumpPressed(InputComponent);
     return true;
 }
 
@@ -57,7 +50,7 @@ bool FPickupCanBePickedWhileJumping::RunTest(const FString& Parameters)
     UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
     if (!TestEqual("Exists Only One Pickup", PickupItems.Num(), 1)) return false;
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(1.0f));
-    ADD_LATENT_AUTOMATION_COMMAND(FJumpLatentCommand(Character));
+    ADD_LATENT_AUTOMATION_COMMAND(FJumpLatentCommand(Character->InputComponent));
     ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
         [=]()
         {
@@ -81,7 +74,7 @@ bool FTooHighPickupCantBePickedWhileJumping::RunTest(const FString& Parameters)
     UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
     if (!TestEqual("Exists Only One Pickup", PickupItems.Num(), 1)) return false;
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(1.0f));
-    ADD_LATENT_AUTOMATION_COMMAND(FJumpLatentCommand(Character));
+    ADD_LATENT_AUTOMATION_COMMAND(FJumpLatentCommand(Character->InputComponent));
     ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
         [=]()
         {
@@ -113,7 +106,7 @@ bool FAllPickupsCanBeTakenWhileMoving::RunTest(const FString& Parameters)
     ADD_LATENT_AUTOMATION_COMMAND(FTPSUntilLatentCommand(
         [=]() { Character->InputComponent->AxisBindings[MoveForwardIndex].AxisDelegate.Execute(1.0f); }, []() {}, 3.0f));
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(1.0f));
-    ADD_LATENT_AUTOMATION_COMMAND(FJumpLatentCommand(Character));
+    ADD_LATENT_AUTOMATION_COMMAND(FJumpLatentCommand(Character->InputComponent));
     ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(2.0f));
     ADD_LATENT_AUTOMATION_COMMAND(FTPSUntilLatentCommand(
         [=]() { Character->InputComponent->AxisBindings[MoveRightIndex].AxisDelegate.Execute(1.0f); }, []() {}, 2.5f));

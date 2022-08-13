@@ -29,44 +29,10 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAllVideoSettingsShouldExist, "TPSGame.UI.AllVi
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSettingsCanBeApplied, "TPSGame.UI.SettingsCanBeApplied",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAutoBenchmarkShouldWork, "TPSGame.UI.AutoBenchmarkShouldWork",
+    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::StressFilter | EAutomationTestFlags::MediumPriority);
+
 using namespace TPS::Test;
-
-namespace
-{
-void PausePressed(UInputComponent* InputComponent)
-{
-    if (!InputComponent) return;
-
-    const int32 ActionIndex = GetActionBindingIndexByName(InputComponent, "ToogleGamePause", EInputEvent::IE_Pressed);
-    if (ActionIndex != INDEX_NONE)
-    {
-        const auto JumpActionBind = InputComponent->GetActionBinding(ActionIndex);
-        JumpActionBind.ActionDelegate.Execute(EKeys::P);
-    }
-}
-
-template <class T>
-T* FindWidgetByClass()
-{
-    TArray<UUserWidget*> Widgets;
-    UWidgetBlueprintLibrary::GetAllWidgetsOfClass(GetTestGameWorld(), Widgets, T::StaticClass(), false);
-    return Widgets.Num() != 0 ? Cast<T>(Widgets[0]) : nullptr;
-}
-
-UWidget* FindWidgetByName(const UUserWidget* ParentWidget, const FName& SearchingWidgetName)
-{
-    if (!ParentWidget || !ParentWidget->WidgetTree) return nullptr;
-
-    UWidget* FoundWidget = nullptr;
-    UWidgetTree::ForWidgetAndChildren(ParentWidget->WidgetTree->RootWidget, [&](UWidget* Child)
-    {
-        if (Child && Child->GetFName().IsEqual(SearchingWidgetName))
-        {
-            FoundWidget = Child;
-        }
-    });
-    return FoundWidget;
-}
 
 void NextSettingClick(int32 SettingIndex)
 {
@@ -76,6 +42,11 @@ void NextSettingClick(int32 SettingIndex)
     const auto* NextSettingButton = Cast<UButton>(FindWidgetByName(SettingOptionWidget, "NextSettingButton"));
     NextSettingButton->OnClicked.Broadcast();
 }
+void DoBenchmarkClick()
+{
+    const auto* VideoSettingsWidget = FindWidgetByClass<UVideoSettingsWidget>();
+    const auto* RunBenchmarkButton = Cast<UButton>(FindWidgetByName(VideoSettingsWidget, "RunBenchmarkButton"));
+    RunBenchmarkButton->OnClicked.Broadcast();
 }
 
 bool FPauseShouldBeVisibleOnGamePaused::RunTest(const FString& Parameters)
@@ -149,6 +120,41 @@ bool FSettingsCanBeApplied::RunTest(const FString& Parameters)
 
     UTPSGameUserSettings::Get()->SetTextureQuality(TexQualityBefore);
     
+    return true;
+}
+
+bool FAutoBenchmarkShouldWork::RunTest(const FString& Parameters)
+{
+    const auto Level = LevelScope("/Game/ThirdPersonCPP/Maps/MainMap.MainMap");
+    APlayerController* PlayerController = GetTestGameWorld()->GetFirstPlayerController();
+    TestTrueExpr(PlayerController != nullptr);
+    PausePressed(PlayerController->InputComponent);
+
+    DoBenchmarkClick();
+    TArray<int32> SavedSettingsValues;
+    const auto& VideoSettings = UTPSGameUserSettings::Get()->GetVideoSettings();
+    for (const auto& Setting: VideoSettings)
+    {
+        SavedSettingsValues.Add(Setting->GetCurrentOption().Value);
+    }
+
+    for (auto i = 0; i < VideoSettings.Num(); ++i)
+    {
+        NextSettingClick(i);
+    }
+
+    for (auto i = 0; i < VideoSettings.Num(); ++i)
+    {
+        TestTrueExpr(SavedSettingsValues[i] != VideoSettings[i]->GetCurrentOption().Value);
+    }
+
+    DoBenchmarkClick();
+    
+    for (auto i = 0; i < VideoSettings.Num(); ++i)
+    {
+        TestTrueExpr(SavedSettingsValues[i] == VideoSettings[i]->GetCurrentOption().Value);
+    }
+
     return true;
 }
 

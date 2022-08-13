@@ -77,6 +77,43 @@ FString GetTestDataDir()
 {
     return FPaths::GameSourceDir().Append("JenkinsTPS/Tests/Data/");
 }
+
+UWidget* FindWidgetByName(const UUserWidget* ParentWidget, const FName& SearchingWidgetName)
+{
+    if (!ParentWidget || !ParentWidget->WidgetTree) return nullptr;
+
+    UWidget* FoundWidget = nullptr;
+    UWidgetTree::ForWidgetAndChildren(ParentWidget->WidgetTree->RootWidget, [&](UWidget* Child)
+    {
+        if (Child && Child->GetFName().IsEqual(SearchingWidgetName))
+        {
+            FoundWidget = Child;
+        }
+    });
+    return FoundWidget;
+}
+
+void DoInputAction(UInputComponent* InputComponent, const FString& ActionName, const FKey& Key)
+{
+    if (!InputComponent) return;
+
+    const int32 ActionIndex = GetActionBindingIndexByName(InputComponent, ActionName, EInputEvent::IE_Pressed);
+    if (ActionIndex != INDEX_NONE)
+    {
+        const auto ActionBind = InputComponent->GetActionBinding(ActionIndex);
+        ActionBind.ActionDelegate.Execute(Key);
+    }
+}
+
+void PausePressed(UInputComponent* InputComponent)
+{
+    DoInputAction(InputComponent, "ToogleGamePause", EKeys::P);
+}
+
+void JumpPressed(UInputComponent* InputComponent)
+{
+    DoInputAction(InputComponent, "Jump", EKeys::SpaceBar);
+}
 }  // namespace Test
 }  // namespace TPS
 #endif

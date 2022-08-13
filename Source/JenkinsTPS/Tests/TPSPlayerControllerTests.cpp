@@ -16,20 +16,6 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGameCanBeUnPaused, "TPSGame.PlayerCOntroller.G
 
 using namespace TPS::Test;
 
-namespace
-{
-void PausePressed(UInputComponent* InputComponent)
-{
-    if (!InputComponent) return;
-    
-    const int32 ActionIndex = GetActionBindingIndexByName(InputComponent, "ToogleGamePause", EInputEvent::IE_Pressed);
-    if (ActionIndex != INDEX_NONE)
-    {
-        const auto JumpActionBind = InputComponent->GetActionBinding(ActionIndex);
-        JumpActionBind.ActionDelegate.Execute(EKeys::P);
-    }
-}
-}
 
 bool FGameCanBePaused::RunTest(const FString& Parameters)
 {

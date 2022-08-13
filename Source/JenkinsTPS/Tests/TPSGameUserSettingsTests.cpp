@@ -1,8 +1,8 @@
 // My game copyright
 
-#include "Settings/TPSGameUserSettings.h"
 #if WITH_AUTOMATION_TESTS
 
+#include "Settings/TPSGameUserSettings.h"
 #include "JenkinsTPS/Tests/TPSGameUserSettingsTests.h"
 #include "CoreMinimal.h"
 #include "Misc/AutomationTest.h"

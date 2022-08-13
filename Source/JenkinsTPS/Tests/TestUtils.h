@@ -5,6 +5,9 @@
 
 #include "CoreMinimal.h"
 #include "Engine/Blueprint.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Blueprint/WidgetTree.h"
+#include "Blueprint/UserWidget.h"
 #include "Tests/AutomationCommon.h"
 
 namespace TPS
@@ -81,6 +84,22 @@ int32 GetAxisBindingIndexByName(UInputComponent* InputComponent, const FString& 
 void CallFuncByNameWithParams(UObject* Object, const FString& FuncName, const TArray<FString>& Params);
 
 FString GetTestDataDir();
+
+
+template <class T>
+T* FindWidgetByClass()
+{
+    TArray<UUserWidget*> Widgets;
+    UWidgetBlueprintLibrary::GetAllWidgetsOfClass(GetTestGameWorld(), Widgets, T::StaticClass(), false);
+    return Widgets.Num() != 0 ? Cast<T>(Widgets[0]) : nullptr;
+}
+
+
+UWidget* FindWidgetByName(const UUserWidget* ParentWidget, const FName& SearchingWidgetName);
+
+void DoInputAction(UInputComponent* InputComponent, const FString& ActionName, const FKey& Key);
+void PausePressed(UInputComponent* InputComponent);
+void JumpPressed(UInputComponent* InputComponent);
 }  // namespace Test
 }  // namespace TPS
 #endif
