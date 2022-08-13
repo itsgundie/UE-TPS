@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "TPSTypes.generated.h"
 
 UENUM(BlueprintType)
@@ -10,6 +11,26 @@ enum class EPickupItemType : uint8
     CUBE UMETA(DisplayName = "Testing Cube"),
     CYLINDER UMETA(DisplayName = "Testing Cylinder"),
     CONE UMETA(DisplayName = "Testing Cone")
+};
+
+UCLASS()
+class JENKINSTPS_API UTPSLocalizationFuncLib : public UBlueprintFunctionLibrary
+{
+    GENERATED_BODY()
+public:
+    UFUNCTION(BlueprintPure)
+    static FText GetPickupItemText(EPickupItemType PickupItemType)
+    {
+        switch (PickupItemType)
+        {
+            case EPickupItemType::CONE: return  NSLOCTEXT("PickupItemType", "Cone_Loc", "CONE");
+            case EPickupItemType::CUBE: return  NSLOCTEXT("PickupItemType", "Cube_Loc", "CUBE");
+            case EPickupItemType::SPHERE: return  NSLOCTEXT("PickupItemType", "Sphere_Loc", "SPHERE");
+            case EPickupItemType::CYLINDER: return  NSLOCTEXT("PickupItemType", "Cylinder_Loc", "CYLINDER");
+        };
+        checkNoEntry();
+        return FText{};
+    }
 };
 
 USTRUCT(BlueprintType)
