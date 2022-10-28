@@ -2,8 +2,8 @@
 
 #if WITH_AUTOMATION_TESTS
 
-#include "Settings/TPSGameUserSettings.h"
 #include "JenkinsTPS/Tests/TPSGameUserSettingsTests.h"
+#include "Settings/TPSGameUserSettings.h"
 #include "CoreMinimal.h"
 #include "Misc/AutomationTest.h"
 #include "JenkinsTPS/Tests/TestUtils.h"
