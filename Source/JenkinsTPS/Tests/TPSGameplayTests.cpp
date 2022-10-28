@@ -80,7 +80,7 @@ bool FTooHighPickupCantBePickedWhileJumping::RunTest(const FString& Parameters)
         {
             TArray<AActor*> PickupItems;
             UGameplayStatics::GetAllActorsOfClass(World, ATPSPickupItem::StaticClass(), PickupItems);
-            TestTrueExpr(PickupItems.Num() == 1);
+            TestTrueExpr(PickupItems.Num() == 11);
         },
         2.0f));
     return true;
