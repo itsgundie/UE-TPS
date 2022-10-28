@@ -35,6 +35,6 @@ set EXTRA_MODULE_NAMES="%ProjectPureName%"
 set TargetTemplateFilePath=%ProjectRoot%\devops\targets\GameModule.Target.cs.template
 
 rem Run
+set GameExePath=%ProjectRoot%\Build\WindowsNoEditor\%ProjectPureName%.exe
 set ServerExePath=%ProjectRoot%\Build\WindowsServer\%ProjectPureName%Server.exe
 set ClientExePath=%ProjectRoot%\Build\WindowsClient\%ProjectPureName%Client.exe
-set GameExePath=%ProjectRoot%\Build\WindowsNoEditor\%ProjectPureName%.exe
