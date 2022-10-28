@@ -1,0 +1,1 @@
+java -jar agent.jar -jnlpUrl http://localhost:8080/computer/Jenkins%5FBuilder/jenkins-agent.jnlp -workDir "C:\Jenkins"

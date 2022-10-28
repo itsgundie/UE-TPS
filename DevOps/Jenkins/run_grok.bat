@@ -1,0 +1,3 @@
+ngrok config add-authtoken 2Gm9sPwDQfGWxKw2gwZotx9wm9Q_5JKEuWbcLRwP5ovkREJR1
+
+ngrok http 8080
